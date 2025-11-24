@@ -134,6 +134,7 @@ python3 dataset_downloader_base_main.py -c Hot3DQuest_download_urls.json -o ../d
 ### Viewing objects and headset pose trajectory
 ```
 python3 viewer.py --sequence_folder dataset/P0003_c701bd11 --object_library_folder dataset/assets/
+python3 viewer.py --sequence_folder dataset/P0001_4bf4e21a --object_library_folder dataset/assets/ -r90
 
 python3 viewer.py --sequence_folder dataset/P0003_c701bd11 \
 --object_library_folder dataset/assets/ \

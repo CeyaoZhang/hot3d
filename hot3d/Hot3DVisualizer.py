@@ -23,12 +23,13 @@ from data_loaders.hand_common import LANDMARK_CONNECTIVITY
 from data_loaders.headsets import Headset
 from data_loaders.loader_hand_poses import HandType
 from data_loaders.loader_object_library import ObjectLibrary
+from data_loaders.AlignedBox2d import AlignedBox2d
 from projectaria_tools.core.stream_id import StreamId  # @manual
 
 try:
-    from dataset_api import Hot3dDataProvider  # @manual
+    from Hot3dDataProvider import Hot3dDataProvider  # @manual
 except ImportError:
-    from hot3d.dataset_api import Hot3dDataProvider
+    from hot3d.Hot3dDataProvider import Hot3dDataProvider
 
 from data_loaders.HandDataProviderBase import (  # @manual
     HandDataProviderBase,
@@ -70,6 +71,7 @@ class Hot3DVisualizer:
         self,
         hot3d_data_provider: Hot3dDataProvider,
         hand_type: HandType = HandType.Umetrack,
+        rotate_images_90: bool = False,
     ) -> None:
         self._hot3d_data_provider = hot3d_data_provider
         # Device calibration and Image stream data
@@ -107,6 +109,8 @@ class Hot3DVisualizer:
 
         # To be parametrized later
         self._jpeg_quality = 75
+
+        self._rotate_images_90 = rotate_images_90 
 
     def log_static_assets(
         self,
@@ -286,10 +290,10 @@ class Hot3DVisualizer:
             #
 
             # Undistorted image (required if you want see reprojected 3D mesh on the images)
-            image_data = self._device_data_provider.get_undistorted_image(
-                timestamp_ns, stream_id
-            )
+            image_data = self._device_data_provider.get_undistorted_image(timestamp_ns, stream_id)
             if image_data is not None:
+                if self._rotate_images_90:
+                    image_data = Hot3DVisualizer.rotate_image_90_clockwise(image_data)
                 rr.log(
                     f"world/device/{stream_id}",
                     rr.Image(image_data).compress(jpeg_quality=self._jpeg_quality),
@@ -298,10 +302,13 @@ class Hot3DVisualizer:
             # Raw device images (required for object bounding box visualization)
             image_data = self._device_data_provider.get_image(timestamp_ns, stream_id)
             if image_data is not None:
+                if self._rotate_images_90:
+                    image_data = Hot3DVisualizer.rotate_image_90_clockwise(image_data)
                 rr.log(
                     f"world/device/{stream_id}_raw",
                     rr.Image(image_data).compress(jpeg_quality=self._jpeg_quality),
                 )
+
 
             if (
                 self._object_box2d_data_provider is not None
@@ -321,6 +328,7 @@ class Hot3DVisualizer:
                     self._object_box2d_data_provider,
                     self._object_library,
                     self._object_box2d_colors,
+                    self._rotate_images_90,
                 )
 
             #
@@ -549,6 +557,7 @@ class Hot3DVisualizer:
         object_box2d_data_provider: ObjectBox2dProvider,
         object_library: ObjectLibrary,
         bbox_colors: np.ndarray,
+        rotate_images_90: bool,
     ):
         """
         Object bounding boxes (valid for native raw images).
@@ -581,14 +590,33 @@ class Hot3DVisualizer:
                 continue
 
             logging_status[object_uid] = True
+
+            if rotate_images_90:
+                # Get original image height for rotation transformation
+                # Assuming Aria RGB: 1408, SLAM: 480
+                original_height = 1408 if "214" in str(stream_id) else 480
+                
+                # Rotate bbox coordinates 90 degrees clockwise
+                new_left, new_top, new_width, new_height = Hot3DVisualizer.rotate_bbox_90_clockwise(
+                    box, original_height
+                )
+                mins = [new_left, new_top]
+                sizes = [new_width, new_height]
+            else:
+                mins = [box.left, box.top]
+                sizes = [box.width, box.height]
+
             rr.log(
                 f"world/device/{stream_id}_raw/bbox/{object_name}",
                 rr.Boxes2D(
-                    mins=[box.left, box.top],
-                    sizes=[box.width, box.height],
+                    mins=mins,
+                    sizes=sizes,
                     colors=bbox_colors[object_uids.index(object_uid)],
                 ),
             )
+
+  
+
         # If some object are not visible, we clear the bounding box visualization
         for key, value in logging_status.items():
             if not value:
@@ -597,3 +625,25 @@ class Hot3DVisualizer:
                     f"world/device/{stream_id}_raw/bbox/{object_name}",
                     rr.Clear.flat(),
                 )
+
+    @staticmethod
+    def rotate_image_90_clockwise(image: np.ndarray) -> np.ndarray:
+        """Rotate image 90 degrees clockwise"""
+        return np.rot90(image, k=-1)
+
+    @staticmethod
+    def rotate_bbox_90_clockwise(box: AlignedBox2d, original_height: int) -> tuple:
+        """
+        Rotate bounding box coordinates 90 degrees clockwise
+        Returns: (new_left, new_top, new_width, new_height)
+        """
+        # Clockwise 90 degree rotation formula:
+        # new_left = original_height - old_bottom
+        # new_top = old_left
+        # new_right = original_height - old_top  
+        # new_bottom = old_right
+        new_left = original_height - box.bottom
+        new_top = box.left
+        new_width = box.height
+        new_height = box.width
+        return (new_left, new_top, new_width, new_height)

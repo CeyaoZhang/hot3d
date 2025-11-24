@@ -43,7 +43,7 @@ except ImportError:
 from data_loaders.HandDataProviderBase import HandDataProviderBase
 from data_loaders.headsets import Headset
 from data_loaders.loader_object_library import load_object_library, ObjectLibrary
-from dataset_api import Hot3dDataProvider
+from Hot3dDataProvider import Hot3dDataProvider
 from PIL import Image
 from projectaria_tools.core.calibration import (
     CameraCalibration,

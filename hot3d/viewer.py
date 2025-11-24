@@ -22,9 +22,9 @@ from data_loaders.loader_object_library import load_object_library
 from data_loaders.mano_layer import loadManoHandModel
 
 try:
-    from dataset_api import Hot3dDataProvider  # @manual
+    from Hot3dDataProvider import Hot3dDataProvider  # @manual
 except ImportError:
-    from hot3d.dataset_api import Hot3dDataProvider
+    from hot3d.Hot3dDataProvider import Hot3dDataProvider
 
 try:
     from Hot3DVisualizer import Hot3DVisualizer
@@ -70,6 +70,14 @@ def parse_args():
         "--rrd_output_path", type=str, default=None, help=argparse.SUPPRESS
     )
 
+    parser.add_argument(
+        "--rotate_images_90",
+        "-r90",
+        action="store_true",
+        default=False,
+        help="rotate all 2D images and bounding boxes 90 degrees clockwise",
+    )
+
     return parser.parse_args()
 
 
@@ -82,6 +90,7 @@ def execute_rerun(
     timestamps_slice: Type[slice],
     fail_on_missing_data: bool,
     hand_type: str,
+    rotate_images_90: bool = False,  
 ):
     if not os.path.exists(sequence_folder):
         raise RuntimeError(f"Sequence folder {sequence_folder} does not exist")
@@ -124,7 +133,7 @@ def execute_rerun(
     #
     # Initialize the rerun hot3d visualizer interface
     #
-    rr_visualizer = Hot3DVisualizer(data_provider, hand_enum_type)
+    rr_visualizer = Hot3DVisualizer(data_provider, hand_enum_type, rotate_images_90=rotate_images_90)
 
     # Define which image stream will be shown
     image_stream_ids = data_provider.device_data_provider.get_image_stream_ids()
@@ -159,6 +168,7 @@ def main():
             timestamps_slice=slice(None, None, None),
             fail_on_missing_data=False,
             hand_type=args.hand_type,
+            rotate_images_90=args.rotate_images_90,  
         )
     except Exception as error:
         print(f"An exception occurred: {error}")
