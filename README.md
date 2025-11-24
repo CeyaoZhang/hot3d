@@ -72,6 +72,7 @@ python3 -m pip install vrs
 python3 -m pip install matplotlib
 
 # 3. (Optional) Install the third-party dependencies required for hands by reviewing and accepting the licenses provided on the corresponding third-party repositories
+# MANO need this
 python3 -m pip install 'git+https://github.com/vchoutas/smplx.git'
 python3 -m pip install 'git+https://github.com/mattloper/chumpy'
 ```
@@ -115,24 +116,29 @@ mkdir -p ../dataset
 
 # 3. Run the dataset downloader
 # Download HOT3D Object Library data
-python3 dataset_downloader_base_main.py -c Hot3DAssets_download_urls.json -o ../dataset --sequence_name all
+python3 dataset_downloader_base_main.py -c Hot3DAssets_download_urls.json -o ../dataset --sequence_names all
 
 # Download one HOT3D Aria data sequence
-python3 dataset_downloader_base_main.py -c Hot3DAria_download_urls.json -o ../dataset --sequence_name P0003_c701bd11 --data_types all
+python3 dataset_downloader_base_main.py -c Hot3DAria_download_urls.json -o ../dataset --sequence_names all --data_types all
 # Type answer `y`
 
 # Download one HOT3D Quest data sequence
-python3 dataset_downloader_base_main.py -c Hot3DQuest_download_urls.json -o ../dataset --sequence_name P0002_1464cbdc --data_types all
+python3 dataset_downloader_base_main.py -c Hot3DQuest_download_urls.json -o ../dataset --sequence_names all --data_types all
 # Type answer `y`
 ```
 
-**Tip:** To download all sequences in a download links JSON file (such as the HOT3D Object Library data in step 3), pass sequence_name as 'all'.
+**Tip:** To download all sequences in a download links JSON file (such as the HOT3D Object Library data in step 3), pass sequence_names as 'all'.
 
 ## Step 4: Run the dataset viewer
 
 ### Viewing objects and headset pose trajectory
 ```
-python3 viewer.py --sequence_folder <PATH>/hot3d_dataset/P0003_c701bd11 --object_library_folder <PATH>/hot3d_dataset/assets/
+python3 viewer.py --sequence_folder dataset/P0003_c701bd11 --object_library_folder dataset/assets/
+
+python3 viewer.py --sequence_folder dataset/P0003_c701bd11 \
+--object_library_folder dataset/assets/ \
+--mano_model_folder dataset/mano_v1_2/models/ \
+--hand_type MANO
 ```
 
 When using `pixi`, you can directly launch the viewer without explicitly activating the environment by using the following command:

@@ -116,7 +116,7 @@ def execute_rerun(
     #
     # Prepare the rerun rerun log configuration
     #
-    rr.init("hot3d Data Viewer", spawn=(rrd_output_path is None))
+    rr.init("hot3d Data Viewer", spawn=(rrd_output_path is None)) # 启动 Rerun 查看器进程    
     if rrd_output_path is not None:
         print(f"Saving .rrd file to {rrd_output_path}")
         rr.save(rrd_output_path)

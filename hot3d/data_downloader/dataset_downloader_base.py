@@ -199,7 +199,7 @@ class DatasetDownloaderBase:
 
                 session.mount("https://", HTTPAdapter(max_retries=retries))
 
-                with session.get(network_link, stream=True, timeout=10) as r:
+                with session.get(network_link, stream=True, timeout=120) as r:
                     # r.raise_for_status()
                     total_size_in_bytes = int(r.headers.get("content-length", 0))
 

@@ -210,7 +210,7 @@ class Hot3DVisualizer:
             ## for Quest devices we will use factory calibration which is a static asset
             pass
 
-        headset_pose3d_with_dt = None
+        headset_pose3d_with_dt = None # 读取头盔姿态
         if self._device_data_provider is not None:
             headset_pose3d_with_dt = self._device_pose_provider.get_pose_at_timestamp(
                 timestamp_ns=timestamp_ns,
@@ -219,7 +219,7 @@ class Hot3DVisualizer:
                 acceptable_time_delta=acceptable_time_delta,
             )
 
-        hand_poses_with_dt = None
+        hand_poses_with_dt = None # 读取手部姿态
         if self._hand_data_provider is not None:
             hand_poses_with_dt = self._hand_data_provider.get_pose_at_timestamp(
                 timestamp_ns=timestamp_ns,
