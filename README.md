@@ -62,19 +62,22 @@ pixi run setup_hands
 ```
 # 1. Install conda -> https://conda.io/projects/conda/en/latest/user-guide/getting-started.html
 # 2. Create your environment
-conda create --name hot3d
+conda create --name hot3d python=3.10.12 -y
 conda activate hot3d
+pip install -r requirements.txt # 下面都不要了
 
 # 2. Install dependencies
-python3 -m ensurepip
-python3 -m pip install projectaria_tools==1.5.1 torch requests rerun-sdk==0.16.0
-python3 -m pip install vrs
-python3 -m pip install matplotlib
+# python3 -m ensurepip
+pip install projectaria_tools==1.5.2 torch==2.1.2 requests rerun-sdk==0.16.1
+pip install vrs
+pip install matplotlib
 
 # 3. (Optional) Install the third-party dependencies required for hands by reviewing and accepting the licenses provided on the corresponding third-party repositories
 # MANO need this
-python3 -m pip install 'git+https://github.com/vchoutas/smplx.git'
-python3 -m pip install 'git+https://github.com/mattloper/chumpy'
+pip install 'git+https://github.com/vchoutas/smplx.git'
+pip install 'git+https://github.com/mattloper/chumpy'
+
+pip install ipykernel
 ```
 
 #### A quick introduction to the [CONDA environment](https://docs.conda.io/projects/conda/en/4.6.1/user-guide/tasks/manage-environments.html#managing-environments)
