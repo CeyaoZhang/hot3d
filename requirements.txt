@@ -8,5 +8,5 @@ matplotlib
 
 # MANO 相关（需先同意第三方许可证）
 # 若不想装，把下两行注释即可
-git+https://github.com/vchoutas/smplx.git
-git+https://github.com/mattloper/chumpy.git
+# git+https://github.com/vchoutas/smplx.git
+# git+https://github.com/mattloper/chumpy.git

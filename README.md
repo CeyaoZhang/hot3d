@@ -62,20 +62,21 @@ pixi run setup_hands
 ```
 # 1. Install conda -> https://conda.io/projects/conda/en/latest/user-guide/getting-started.html
 # 2. Create your environment
-conda create --name hot3d python=3.10.12 -y
+conda create --name hot3d python==3.10.12 -y
 conda activate hot3d
-pip install -r requirements.txt # 下面都不要了
+
 
 # 2. Install dependencies
+pip install -r requirements.txt 
 # python3 -m ensurepip
-pip install projectaria_tools==1.5.2 torch==2.1.2 requests rerun-sdk==0.16.1
-pip install vrs
-pip install matplotlib
+# pip install projectaria_tools==1.5.2 torch==2.1.2 requests rerun-sdk==0.16.1
+# pip install vrs
+# pip install matplotlib
 
 # 3. (Optional) Install the third-party dependencies required for hands by reviewing and accepting the licenses provided on the corresponding third-party repositories
 # MANO need this
-pip install 'git+https://github.com/vchoutas/smplx.git'
-pip install 'git+https://github.com/mattloper/chumpy'
+pip install git+https://github.com/vchoutas/smplx.git
+pip install --no-build-isolation git+https://github.com/mattloper/chumpy.git # chumpy自身repo的原因，需要隔离安装
 
 pip install ipykernel
 ```
@@ -119,14 +120,17 @@ mkdir -p ../dataset
 
 # 3. Run the dataset downloader
 # Download HOT3D Object Library data
-python3 dataset_downloader_base_main.py -c Hot3DAssets_download_urls.json -o ../dataset --sequence_names all
+python dataset_downloader_base_main.py -c Hot3DAssets_download_urls.json --sequence_names all -o ../dataset 
+python dataset_downloader_base_main.py -c Hot3DAssets_download_urls.json --sequence_names all -o /share_data/ceyao/data/hot3d 
 
 # Download one HOT3D Aria data sequence
-python3 dataset_downloader_base_main.py -c Hot3DAria_download_urls.json -o ../dataset --sequence_names all --data_types all
+python dataset_downloader_base_main.py -c Hot3DAria_download_urls.json --sequence_names all --data_types all -o ../dataset 
+python dataset_downloader_base_main.py -c Hot3DAria_download_urls.json --sequence_names all --data_types all -o /share_data/ceyao/data/hot3d 
 # Type answer `y`
 
 # Download one HOT3D Quest data sequence
-python3 dataset_downloader_base_main.py -c Hot3DQuest_download_urls.json -o ../dataset --sequence_names all --data_types all
+python dataset_downloader_base_main.py -c Hot3DQuest_download_urls.json --sequence_names all --data_types all -o ../dataset 
+python dataset_downloader_base_main.py -c Hot3DQuest_download_urls.json --sequence_names all --data_types all -o /share_data/ceyao/data/hot3
 # Type answer `y`
 ```
 
